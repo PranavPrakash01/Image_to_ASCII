@@ -13,7 +13,7 @@ def resize_image(image, new_width=100):
 def grayify(image):
     return cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-def pixels_to_ascii(image, range_width=27):
+def pixels_to_ascii(image, range_width=21):
     pixels = image.flatten()
     ascii_str = ""
     for pixel_value in pixels:
@@ -58,6 +58,6 @@ def create_ascii_image(image_path, output_path, new_width=100):
     cv2.imwrite(output_path, output_image)
 
 if __name__ == "__main__":
-    input_image_path = "ann.png"
+    input_image_path = "aa.png"
     output_image_path = "ascii_image.png"
     create_ascii_image(input_image_path, output_image_path)
