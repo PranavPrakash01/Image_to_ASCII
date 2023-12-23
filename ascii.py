@@ -1,7 +1,78 @@
 import cv2
+import os
 import numpy as np
+import tkinter as tk
+from tkinter import filedialog
+from PIL import Image, ImageTk
 
 ASCII_CHARS = "@%#*+=-:. "
+
+class ASCIIConverterApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("ASCII Image Converter")
+
+        self.input_image_path = tk.StringVar()
+        self.output_image_path = tk.StringVar()
+
+        self.create_widgets()
+
+    def create_widgets(self):
+        # Arrange input and output image displays side by side
+        tk.Label(self.root, text="Input Image").grid(row=0, column=0, padx=10, pady=10)
+        tk.Label(self.root, text="Output Image").grid(row=0, column=1, padx=10, pady=10)
+
+        self.input_image_label = tk.Label(self.root, text="")
+        self.input_image_label.grid(row=1, column=0, padx=10, pady=10)
+
+        self.output_image_label = tk.Label(self.root, text="")
+        self.output_image_label.grid(row=1, column=1, padx=10, pady=10)
+
+        # Convert Button
+        tk.Button(self.root, text="Convert", command=self.convert_image).grid(row=2, column=0, columnspan=2, pady=10)
+
+        # Browse Buttons
+        tk.Label(self.root, text="Browse Input Image").grid(row=3, column=0, padx=10, pady=10)
+        tk.Button(self.root, text="Browse", command=self.browse_input_image).grid(row=3, column=1, padx=10, pady=10)
+
+    def browse_input_image(self):
+        file_path = filedialog.askopenfilename(title="Select Image", filetypes=[("Image files", "*.png;*.jpg;*.jpeg")])
+        if file_path:
+            self.input_image_path.set(file_path)
+            self.show_input_image()
+
+    def show_input_image(self):
+        image_path = self.input_image_path.get()
+        if image_path:
+            image = Image.open(image_path)
+            image.thumbnail((400, 400))
+            photo = ImageTk.PhotoImage(image)
+            self.input_image_label.configure(image=photo)
+            self.input_image_label.image = photo
+
+    def convert_image(self):
+        input_path = self.input_image_path.get()
+        if not input_path:
+            return
+
+        # Get the directory and filename of the input image
+        input_dir, input_filename = os.path.split(input_path)
+        output_filename = f"{os.path.splitext(input_filename)[0]}-ascii.png"
+        output_path = os.path.join(input_dir, output_filename)
+
+        create_ascii_image(input_path, output_path)
+
+        self.output_image_path.set(output_path)
+        self.show_output_image()
+
+    def show_output_image(self):
+        image_path = self.output_image_path.get()
+        if image_path:
+            image = Image.open(image_path)
+            image.thumbnail((400, 400))
+            photo = ImageTk.PhotoImage(image)
+            self.output_image_label.configure(image=photo)
+            self.output_image_label.image = photo
 
 def resize_image(image, new_width=100):
     height, width, _ = image.shape
@@ -17,16 +88,15 @@ def pixels_to_ascii(image, range_width=21):
     pixels = image.flatten()
     ascii_str = ""
     for pixel_value in pixels:
-        # Invert the mapping for darker pixels
         inverted_pixel_value = 255 - pixel_value
         normalized_pixel = int(inverted_pixel_value / range_width)
         index = min(normalized_pixel, len(ASCII_CHARS) - 1)
         ascii_str += ASCII_CHARS[index]
     return ascii_str
 
-def create_ascii_image(image_path, output_path, new_width=100):
+def create_ascii_image(input_path, output_path, new_width=100):
     try:
-        image = cv2.imread(image_path)
+        image = cv2.imread(input_path)
     except Exception as e:
         print(e)
         return
@@ -38,26 +108,24 @@ def create_ascii_image(image_path, output_path, new_width=100):
     img_width = image.shape[1]
     img_height = image.shape[0]
 
-    font_size = 10  # You can adjust the font size
+    font_size = 10
 
-    # Create a black background
     output_image = np.zeros((img_height * font_size, img_width * font_size, 3), np.uint8)
 
-    # Draw white ASCII characters on the black background
     for i in range(len(ascii_str)):
         row = i // img_width
         col = i % img_width
         position = (col * font_size, row * font_size)
         font = cv2.FONT_HERSHEY_SIMPLEX
-        font_scale = 0.4  # You can adjust the font scale
-        font_thickness = 1  # You can adjust the font thickness
-        font_color = (255, 255, 255)  # White color
+        font_scale = 0.4
+        font_thickness = 1
+        font_color = (255, 255, 255)
         cv2.putText(output_image, ascii_str[i], position, font, font_scale, font_color, font_thickness)
 
-    # Save the resulting image
     cv2.imwrite(output_path, output_image)
 
 if __name__ == "__main__":
-    input_image_path = "aa.png"
-    output_image_path = "ascii_image.png"
-    create_ascii_image(input_image_path, output_image_path)
+    root = tk.Tk()
+    app = ASCIIConverterApp(root)
+    root.geometry("900x500")  # Set a larger window size
+    root.mainloop()

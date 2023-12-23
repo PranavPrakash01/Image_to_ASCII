@@ -66,13 +66,15 @@ def create_video(frames_folder, output_video_path, fps=30):
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # Use appropriate codec based on your system
     out = cv2.VideoWriter(output_video_path, fourcc, fps, (frame_width, frame_height))
 
-    for frame_file in frame_files:
+    print("Creating video from ASCII frames...")
+    for i, frame_file in enumerate(frame_files, start=1):
         frame_path = os.path.join(frames_folder, frame_file)
         frame = cv2.imread(frame_path)
         out.write(frame)
+        print(f"Processed frame {i}/{len(frame_files)}")
 
     out.release()
-
+    print("Video creation complete!")
 
 def process_video(input_video_path, output_video_path, new_width=100, fps=30):
     frames_folder = "frames"
@@ -87,6 +89,7 @@ def process_video(input_video_path, output_video_path, new_width=100, fps=30):
 
     frame_count = 0
 
+    print("Generating ASCII frames from video...")
     while cap.isOpened():
         ret, frame = cap.read()
 
@@ -100,6 +103,7 @@ def process_video(input_video_path, output_video_path, new_width=100, fps=30):
         cv2.imwrite(frame_filename, ascii_frame)
 
         frame_count += 1
+        print(f"Processed frame {frame_count}")
 
     cap.release()
 
