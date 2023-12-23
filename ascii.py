@@ -127,5 +127,5 @@ def create_ascii_image(input_path, output_path, new_width=100):
 if __name__ == "__main__":
     root = tk.Tk()
     app = ASCIIConverterApp(root)
-    root.geometry("900x500")  # Set a larger window size
+    root.geometry("900x500")
     root.mainloop()
