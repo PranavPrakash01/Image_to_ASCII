@@ -110,7 +110,7 @@ def process_video(input_video_path, output_video_path, new_width=100, fps=30):
     # Create video from ASCII frames
     create_video(frames_folder, output_video_path, fps=fps)
 
-    # Delete the frames folder
+
     shutil.rmtree(frames_folder)
 
 if __name__ == "__main__":
