@@ -28,12 +28,6 @@ class ASCIIConverterApp:
         tk.Label(self.root, text="Input Image").grid(row=0, column=0, padx=10, pady=10)
         tk.Label(self.root, text="Output Image").grid(row=0, column=1, padx=10, pady=10)
 
-        self.input_image_label = tk.Label(self.root, text="")
-        self.input_image_label.grid(row=1, column=0, padx=10, pady=10)
-
-        self.output_image_label = tk.Label(self.root, text="")
-        self.output_image_label.grid(row=1, column=1, padx=10, pady=10)
-
         # Set placeholders as initial images
         self.show_input_image(self.input_placeholder_image)
         self.show_output_image(self.output_placeholder_image)
@@ -56,10 +50,25 @@ class ASCIIConverterApp:
             image_path = self.input_image_path.get()
             if image_path:
                 image = Image.open(image_path)
-        fixed_size_image = image.resize((400, 400), Image.ANTIALIAS)
-        photo = ImageTk.PhotoImage(fixed_size_image)
-        self.input_image_label.configure(image=photo)
+
+        # Calculate the maximum size that fits within the placeholder while maintaining the aspect ratio
+        max_width = 400
+        max_height = 400
+        width, height = image.size
+        aspect_ratio = width / height
+
+        if aspect_ratio > 1:
+            new_width = min(width, max_width)
+            new_height = int(new_width / aspect_ratio)
+        else:
+            new_height = min(height, max_height)
+            new_width = int(new_height * aspect_ratio)
+
+        resized_image = image.resize((new_width, new_height), Image.ANTIALIAS)
+        photo = ImageTk.PhotoImage(resized_image)
+        self.input_image_label = tk.Label(self.root, image=photo)
         self.input_image_label.image = photo
+        self.input_image_label.grid(row=1, column=0, padx=10, pady=10)
 
     def convert_image(self):
         input_path = self.input_image_path.get()
@@ -81,10 +90,25 @@ class ASCIIConverterApp:
             image_path = self.output_image_path.get()
             if image_path:
                 image = Image.open(image_path)
-        fixed_size_image = image.resize((400, 400), Image.ANTIALIAS)
-        photo = ImageTk.PhotoImage(fixed_size_image)
-        self.output_image_label.configure(image=photo)
+
+        # Calculate the maximum size that fits within the placeholder while maintaining the aspect ratio
+        max_width = 400
+        max_height = 400
+        width, height = image.size
+        aspect_ratio = width / height
+
+        if aspect_ratio > 1:
+            new_width = min(width, max_width)
+            new_height = int(new_width / aspect_ratio)
+        else:
+            new_height = min(height, max_height)
+            new_width = int(new_height * aspect_ratio)
+
+        resized_image = image.resize((new_width, new_height), Image.ANTIALIAS)
+        photo = ImageTk.PhotoImage(resized_image)
+        self.output_image_label = tk.Label(self.root, image=photo)
         self.output_image_label.image = photo
+        self.output_image_label.grid(row=1, column=1, padx=10, pady=10)
 
 def resize_image(image, new_width=100):
     height, width, _ = image.shape
