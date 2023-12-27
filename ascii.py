@@ -15,7 +15,13 @@ class ASCIIConverterApp:
         self.input_image_path = tk.StringVar()
         self.output_image_path = tk.StringVar()
 
+        # Create white placeholders for images with a fixed size
+        self.input_placeholder_image = Image.new("RGB", (400, 400), "white")
+        self.output_placeholder_image = Image.new("RGB", (400, 400), "white")
+
         self.create_widgets()
+        self.root.update_idletasks()  # Update idle tasks to calculate widget sizes
+        self.root.geometry(f"{self.root.winfo_reqwidth()}x{self.root.winfo_reqheight()}")
 
     def create_widgets(self):
         # Arrange input and output image displays side by side
@@ -27,6 +33,10 @@ class ASCIIConverterApp:
 
         self.output_image_label = tk.Label(self.root, text="")
         self.output_image_label.grid(row=1, column=1, padx=10, pady=10)
+
+        # Set placeholders as initial images
+        self.show_input_image(self.input_placeholder_image)
+        self.show_output_image(self.output_placeholder_image)
 
         # Convert Button
         tk.Button(self.root, text="Convert", command=self.convert_image).grid(row=2, column=0, columnspan=2, pady=10)
@@ -41,14 +51,15 @@ class ASCIIConverterApp:
             self.input_image_path.set(file_path)
             self.show_input_image()
 
-    def show_input_image(self):
-        image_path = self.input_image_path.get()
-        if image_path:
-            image = Image.open(image_path)
-            image.thumbnail((400, 400))
-            photo = ImageTk.PhotoImage(image)
-            self.input_image_label.configure(image=photo)
-            self.input_image_label.image = photo
+    def show_input_image(self, image=None):
+        if image is None:
+            image_path = self.input_image_path.get()
+            if image_path:
+                image = Image.open(image_path)
+        fixed_size_image = image.resize((400, 400), Image.ANTIALIAS)
+        photo = ImageTk.PhotoImage(fixed_size_image)
+        self.input_image_label.configure(image=photo)
+        self.input_image_label.image = photo
 
     def convert_image(self):
         input_path = self.input_image_path.get()
@@ -65,14 +76,15 @@ class ASCIIConverterApp:
         self.output_image_path.set(output_path)
         self.show_output_image()
 
-    def show_output_image(self):
-        image_path = self.output_image_path.get()
-        if image_path:
-            image = Image.open(image_path)
-            image.thumbnail((400, 400))
-            photo = ImageTk.PhotoImage(image)
-            self.output_image_label.configure(image=photo)
-            self.output_image_label.image = photo
+    def show_output_image(self, image=None):
+        if image is None:
+            image_path = self.output_image_path.get()
+            if image_path:
+                image = Image.open(image_path)
+        fixed_size_image = image.resize((400, 400), Image.ANTIALIAS)
+        photo = ImageTk.PhotoImage(fixed_size_image)
+        self.output_image_label.configure(image=photo)
+        self.output_image_label.image = photo
 
 def resize_image(image, new_width=100):
     height, width, _ = image.shape
@@ -127,5 +139,4 @@ def create_ascii_image(input_path, output_path, new_width=100):
 if __name__ == "__main__":
     root = tk.Tk()
     app = ASCIIConverterApp(root)
-    root.geometry("900x500")
     root.mainloop()
