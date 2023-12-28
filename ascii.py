@@ -15,58 +15,66 @@ class ASCIIConverterApp:
         self.input_image_path = tk.StringVar()
         self.output_image_path = tk.StringVar()
 
-        # Create white placeholders for images with a fixed size
         self.input_placeholder_image = Image.new("RGB", (400, 400), "white")
         self.output_placeholder_image = Image.new("RGB", (400, 400), "white")
 
         self.create_widgets()
-        self.root.update_idletasks()  # Update idle tasks to calculate widget sizes
+        self.root.update_idletasks()
         self.root.geometry(f"{self.root.winfo_reqwidth()}x{self.root.winfo_reqheight()}")
 
     def create_widgets(self):
-
-
-        # Set placeholders as initial images
         self.show_input_image(self.input_placeholder_image)
         self.show_output_image(self.output_placeholder_image)
 
-        # Browse Widgets
-        browse_frame = tk.Frame(self.root)
-        browse_frame.grid(row=2, column=0, columnspan=2, pady=5)
+        # Input Image Frame
+        browse_input_frame = tk.Frame(self.root)
+        browse_input_frame.grid(row=2, column=0, columnspan=2, pady=5)
 
-        tk.Label(browse_frame, text="Browse Input Image:").pack(side="left")
-
-        # Entry to display input image path
-        self.input_image_path_entry = tk.Entry(browse_frame, width=40, state="readonly")
+        tk.Label(browse_input_frame, text="Browse Input Image:").pack(side="left")
+        self.input_image_path_entry = tk.Entry(browse_input_frame, width=40, state="readonly")
         self.input_image_path_entry.pack(side="left", padx=5)
+        tk.Button(browse_input_frame, text="Browse", command=self.browse_input_image).pack(side="left", padx=5)
 
-        # Browse Button
-        tk.Button(browse_frame, text="Browse", command=self.browse_input_image).pack(side="left", padx=5)
+        # Output Folder Frame
+        browse_output_frame = tk.Frame(self.root)
+        browse_output_frame.grid(row=3, column=0, columnspan=2, pady=5)
+
+        tk.Label(browse_output_frame, text="Select Output Folder:").pack(side="left")
+        self.output_folder_path_entry = tk.Entry(browse_output_frame, width=40, state="readonly")
+        self.output_folder_path_entry.pack(side="left", padx=5)
+        tk.Button(browse_output_frame, text="Select Folder", command=self.browse_output_folder).pack(side="left", padx=5)
 
         # Convert Button
-        tk.Button(self.root, text="Convert", command=self.convert_image).grid(row=3, column=0, columnspan=2, pady=10)
-
+        tk.Button(self.root, text="Convert", command=self.convert_image).grid(row=4, column=0, columnspan=2, pady=10)
 
     def update_input_image_path_entry(self, path):
         self.input_image_path_entry.config(state="normal")
-        
-        # Extract the last portion of the path (e.g., file name or folder name)
         _, last_portion = os.path.split(path)
-        
         self.input_image_path_entry.delete(0, "end")
         self.input_image_path_entry.insert(0, last_portion)
         self.input_image_path_entry.config(state="readonly")
 
+    def update_output_folder_path_entry(self, path):
+        self.output_folder_path_entry.config(state="normal")
+        self.output_folder_path_entry.delete(0, "end")
+        self.output_folder_path_entry.insert(0, path)
+        self.output_folder_path_entry.config(state="readonly")
+
     def browse_input_image(self):
-        # Set placeholders as initial images
         self.show_input_image(self.input_placeholder_image)
         self.show_output_image(self.output_placeholder_image)
-        
-        file_path = filedialog.askopenfilename(title="Select Image", filetypes=[("Image files", "*.png;*.jpg;*.jpeg")])
+
+        file_path = filedialog.askopenfilename(title="Select Input Image", filetypes=[("Image files", "*.png;*.jpg;*.jpeg")])
         if file_path:
             self.input_image_path.set(file_path)
             self.show_input_image()
             self.update_input_image_path_entry(file_path)
+
+    def browse_output_folder(self):
+        output_folder_path = filedialog.askdirectory(title="Select Output Folder")
+        if output_folder_path:
+            self.output_image_path.set(output_folder_path)
+            self.update_output_folder_path_entry(output_folder_path)
 
     def show_input_image(self, image=None):
         if image is None:
@@ -95,18 +103,18 @@ class ASCIIConverterApp:
 
     def convert_image(self):
         input_path = self.input_image_path.get()
-        if not input_path:
+        output_folder_path = self.output_image_path.get()
+
+        if not input_path or not output_folder_path:
             return
 
-        # Get the directory and filename of the input image
         input_dir, input_filename = os.path.split(input_path)
         output_filename = f"{os.path.splitext(input_filename)[0]}-ascii.png"
-        output_path = os.path.join(input_dir, output_filename)
+        output_path = os.path.join(output_folder_path, output_filename)
 
         create_ascii_image(input_path, output_path)
 
-        self.output_image_path.set(output_path)
-        self.show_output_image()
+        self.show_output_image(Image.open(output_path))
 
     def show_output_image(self, image=None):
         if image is None:
