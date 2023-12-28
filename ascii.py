@@ -24,20 +24,15 @@ class ASCIIConverterApp:
         self.root.geometry(f"{self.root.winfo_reqwidth()}x{self.root.winfo_reqheight()}")
 
     def create_widgets(self):
-        # Arrange input and output image displays side by side
-        tk.Label(self.root, text="Input Image").grid(row=0, column=0, padx=10, pady=10)
-        tk.Label(self.root, text="Output Image").grid(row=0, column=1, padx=10, pady=10)
+
 
         # Set placeholders as initial images
         self.show_input_image(self.input_placeholder_image)
         self.show_output_image(self.output_placeholder_image)
 
-        # Convert Button
-        tk.Button(self.root, text="Convert", command=self.convert_image).grid(row=2, column=0, columnspan=2, pady=10)
-
         # Browse Widgets
         browse_frame = tk.Frame(self.root)
-        browse_frame.grid(row=3, column=0, columnspan=2, pady=5)
+        browse_frame.grid(row=2, column=0, columnspan=2, pady=5)
 
         tk.Label(browse_frame, text="Browse Input Image:").pack(side="left")
 
@@ -47,6 +42,10 @@ class ASCIIConverterApp:
 
         # Browse Button
         tk.Button(browse_frame, text="Browse", command=self.browse_input_image).pack(side="left", padx=5)
+
+        # Convert Button
+        tk.Button(self.root, text="Convert", command=self.convert_image).grid(row=3, column=0, columnspan=2, pady=10)
+
 
     def update_input_image_path_entry(self, path):
         self.input_image_path_entry.config(state="normal")
