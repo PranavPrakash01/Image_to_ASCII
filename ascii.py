@@ -50,11 +50,13 @@ class ASCIIConverterApp:
 
     def update_input_image_path_entry(self, path):
         self.input_image_path_entry.config(state="normal")
+        
+        # Extract the last portion of the path (e.g., file name or folder name)
+        _, last_portion = os.path.split(path)
+        
         self.input_image_path_entry.delete(0, "end")
-        self.input_image_path_entry.insert(0, path)
+        self.input_image_path_entry.insert(0, last_portion)
         self.input_image_path_entry.config(state="readonly")
-
-
 
     def browse_input_image(self):
         # Set placeholders as initial images
