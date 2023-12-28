@@ -33,7 +33,7 @@ class ASCIIConverterApp:
         tk.Label(browse_input_frame, text="Browse Input Image:").pack(side="left")
         self.input_image_path_entry = tk.Entry(browse_input_frame, width=40, state="readonly")
         self.input_image_path_entry.pack(side="left", padx=5)
-        tk.Button(browse_input_frame, text="Browse", command=self.browse_input_image).pack(side="left", padx=5)
+        tk.Button(browse_input_frame, text="Select Image", command=self.browse_input_image).pack(side="left", padx=5)
 
         # Output Folder Frame
         browse_output_frame = tk.Frame(self.root)
