@@ -35,9 +35,26 @@ class ASCIIConverterApp:
         # Convert Button
         tk.Button(self.root, text="Convert", command=self.convert_image).grid(row=2, column=0, columnspan=2, pady=10)
 
-        # Browse Buttons
-        tk.Label(self.root, text="Browse Input Image").grid(row=3, column=0, padx=10, pady=10)
-        tk.Button(self.root, text="Browse", command=self.browse_input_image).grid(row=3, column=1, padx=10, pady=10)
+        # Browse Widgets
+        browse_frame = tk.Frame(self.root)
+        browse_frame.grid(row=3, column=0, columnspan=2, pady=5)
+
+        tk.Label(browse_frame, text="Browse Input Image:").pack(side="left")
+
+        # Entry to display input image path
+        self.input_image_path_entry = tk.Entry(browse_frame, width=40, state="readonly")
+        self.input_image_path_entry.pack(side="left", padx=5)
+
+        # Browse Button
+        tk.Button(browse_frame, text="Browse", command=self.browse_input_image).pack(side="left", padx=5)
+
+    def update_input_image_path_entry(self, path):
+        self.input_image_path_entry.config(state="normal")
+        self.input_image_path_entry.delete(0, "end")
+        self.input_image_path_entry.insert(0, path)
+        self.input_image_path_entry.config(state="readonly")
+
+
 
     def browse_input_image(self):
         # Set placeholders as initial images
@@ -48,6 +65,7 @@ class ASCIIConverterApp:
         if file_path:
             self.input_image_path.set(file_path)
             self.show_input_image()
+            self.update_input_image_path_entry(file_path)
 
     def show_input_image(self, image=None):
         if image is None:
