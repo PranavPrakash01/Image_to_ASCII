@@ -40,6 +40,10 @@ class ASCIIConverterApp:
         tk.Button(self.root, text="Browse", command=self.browse_input_image).grid(row=3, column=1, padx=10, pady=10)
 
     def browse_input_image(self):
+        # Set placeholders as initial images
+        self.show_input_image(self.input_placeholder_image)
+        self.show_output_image(self.output_placeholder_image)
+        
         file_path = filedialog.askopenfilename(title="Select Image", filetypes=[("Image files", "*.png;*.jpg;*.jpeg")])
         if file_path:
             self.input_image_path.set(file_path)
