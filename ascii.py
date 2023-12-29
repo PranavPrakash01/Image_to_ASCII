@@ -53,7 +53,7 @@ class ASCIIConverterApp:
         tk.Label(range_width_frame, text="Range Width:").pack(side="left")
         scale = tk.Scale(range_width_frame, variable=self.range_width, from_=01.0, to=50.0, orient="horizontal", resolution=1.0, showvalue=False, label=None)
         scale.pack(side="left", padx=5)
-        tk.Label(range_width_frame, textvariable=self.range_width).pack(side="left", padx=2)
+        tk.Label(range_width_frame,width=2, textvariable=self.range_width).pack(side="left", padx=2)
 
         # Convert Button
         tk.Button(self.root, text="Convert", command=self.convert_image).grid(row=6, column=0, columnspan=2, pady=10)
