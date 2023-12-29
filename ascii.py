@@ -15,6 +15,8 @@ class ASCIIConverterApp:
         self.input_image_path = tk.StringVar()
         self.output_image_path = tk.StringVar()
 
+        self.range_width = tk.DoubleVar(value=21.0)
+
         self.input_placeholder_image = Image.new("RGB", (400, 400), "white")
         self.output_placeholder_image = Image.new("RGB", (400, 400), "white")
 
@@ -44,8 +46,15 @@ class ASCIIConverterApp:
         self.output_folder_path_entry.pack(side="left", padx=5)
         tk.Button(browse_output_frame, text="Select Folder", command=self.browse_output_folder).pack(side="left", padx=5)
 
+        # Range Width Frame
+        range_width_frame = tk.Frame(self.root)
+        range_width_frame.grid(row=5, column=0, columnspan=2, pady=5)
+
+        tk.Label(range_width_frame, text="Range Width:").pack(side="left")
+        tk.Scale(range_width_frame, variable=self.range_width, from_=1.0, to=50.0, orient="horizontal", resolution=1.0).pack(side="left", padx=5)
+
         # Convert Button
-        tk.Button(self.root, text="Convert", command=self.convert_image).grid(row=4, column=0, columnspan=2, pady=10)
+        tk.Button(self.root, text="Convert", command=self.convert_image).grid(row=6, column=0, columnspan=2, pady=10)
 
     def update_input_image_path_entry(self, path):
         self.input_image_path_entry.config(state="normal")
@@ -112,7 +121,8 @@ class ASCIIConverterApp:
         output_filename = f"{os.path.splitext(input_filename)[0]}-ascii.png"
         output_path = os.path.join(output_folder_path, output_filename)
 
-        create_ascii_image(input_path, output_path)
+        # Pass the range_width parameter to create_ascii_image
+        create_ascii_image(input_path, output_path, new_width=100, range_width=self.range_width.get())
 
         self.show_output_image(Image.open(output_path))
 
@@ -161,7 +171,7 @@ def pixels_to_ascii(image, range_width=21):
         ascii_str += ASCII_CHARS[index]
     return ascii_str
 
-def create_ascii_image(input_path, output_path, new_width=100):
+def create_ascii_image(input_path, output_path, new_width=100, range_width=21.0):
     try:
         image = cv2.imread(input_path)
     except Exception as e:
@@ -171,7 +181,7 @@ def create_ascii_image(input_path, output_path, new_width=100):
     image = resize_image(image, new_width=new_width)
     image = grayify(image)
 
-    ascii_str = pixels_to_ascii(image)
+    ascii_str = pixels_to_ascii(image, range_width=range_width)
     img_width = image.shape[1]
     img_height = image.shape[0]
 
