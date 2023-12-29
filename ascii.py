@@ -15,7 +15,7 @@ class ASCIIConverterApp:
         self.input_image_path = tk.StringVar()
         self.output_image_path = tk.StringVar()
 
-        self.range_width = tk.DoubleVar(value=21.0)
+        self.range_width = tk.DoubleVar(value=20)
 
         self.input_placeholder_image = Image.new("RGB", (400, 400), "white")
         self.output_placeholder_image = Image.new("RGB", (400, 400), "white")
@@ -51,7 +51,9 @@ class ASCIIConverterApp:
         range_width_frame.grid(row=5, column=0, columnspan=2, pady=5)
 
         tk.Label(range_width_frame, text="Range Width:").pack(side="left")
-        tk.Scale(range_width_frame, variable=self.range_width, from_=1.0, to=50.0, orient="horizontal", resolution=1.0).pack(side="left", padx=5)
+        scale = tk.Scale(range_width_frame, variable=self.range_width, from_=01.0, to=50.0, orient="horizontal", resolution=1.0, showvalue=False, label=None)
+        scale.pack(side="left", padx=5)
+        tk.Label(range_width_frame, textvariable=self.range_width).pack(side="left", padx=2)
 
         # Convert Button
         tk.Button(self.root, text="Convert", command=self.convert_image).grid(row=6, column=0, columnspan=2, pady=10)
@@ -161,7 +163,7 @@ def resize_image(image, new_width=100):
 def grayify(image):
     return cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-def pixels_to_ascii(image, range_width=21):
+def pixels_to_ascii(image, range_width=20):
     pixels = image.flatten()
     ascii_str = ""
     for pixel_value in pixels:
