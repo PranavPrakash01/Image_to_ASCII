@@ -16,6 +16,7 @@ class ASCIIConverterApp:
         self.output_image_path = tk.StringVar()
 
         self.range_width = tk.DoubleVar(value=20)
+        self.font_size = tk.DoubleVar(value=10)
 
         self.input_placeholder_image = Image.new("RGB", (400, 400), "white")
         self.output_placeholder_image = Image.new("RGB", (400, 400), "white")
@@ -51,9 +52,18 @@ class ASCIIConverterApp:
         range_width_frame.grid(row=5, column=0, columnspan=2, pady=5)
 
         tk.Label(range_width_frame, text="Range Width:").pack(side="left")
-        scale = tk.Scale(range_width_frame, variable=self.range_width, from_=01.0, to=50.0, orient="horizontal", resolution=1.0, showvalue=False, label=None)
+        scale = tk.Scale(range_width_frame, variable=self.range_width, from_=1.0, to=50.0, orient="horizontal", resolution=1.0, showvalue=False, label=None)
         scale.pack(side="left", padx=5)
-        tk.Label(range_width_frame,width=2, textvariable=self.range_width).pack(side="left", padx=2)
+        tk.Label(range_width_frame, width=2, textvariable=self.range_width).pack(side="left", padx=2)
+
+        # Font Size Frame
+        font_size_frame = tk.Frame(self.root)
+        font_size_frame.grid(row=4, column=0, columnspan=2, pady=5)
+
+        tk.Label(font_size_frame, text="Font Size:").pack(side="left")
+        font_size_scale = tk.Scale(font_size_frame, variable=self.font_size, from_=5, to=15, orient="horizontal", resolution=1, showvalue=False, label=None)
+        font_size_scale.pack(side="left", padx=5)
+        tk.Label(font_size_frame, width=2, textvariable=self.font_size).pack(side="left", padx=2)
 
         # Convert Button
         tk.Button(self.root, text="Convert", command=self.convert_image).grid(row=6, column=0, columnspan=2, pady=10)
@@ -123,8 +133,9 @@ class ASCIIConverterApp:
         output_filename = f"{os.path.splitext(input_filename)[0]}-ascii.png"
         output_path = os.path.join(output_folder_path, output_filename)
 
-        # Pass the range_width parameter to create_ascii_image
-        create_ascii_image(input_path, output_path, new_width=100, range_width=self.range_width.get())
+        font_size = int(self.font_size.get())  # Get the font size value
+
+        create_ascii_image(input_path, output_path, new_width=100, range_width=self.range_width.get(), font_size=font_size)
 
         self.show_output_image(Image.open(output_path))
 
@@ -173,7 +184,7 @@ def pixels_to_ascii(image, range_width=20):
         ascii_str += ASCII_CHARS[index]
     return ascii_str
 
-def create_ascii_image(input_path, output_path, new_width=100, range_width=21.0):
+def create_ascii_image(input_path, output_path, new_width=100, range_width=21.0, font_size=10):
     try:
         image = cv2.imread(input_path)
     except Exception as e:
@@ -187,16 +198,16 @@ def create_ascii_image(input_path, output_path, new_width=100, range_width=21.0)
     img_width = image.shape[1]
     img_height = image.shape[0]
 
-    font_size = 10
+    font_size_scale = font_size
 
-    output_image = np.zeros((img_height * font_size, img_width * font_size, 3), np.uint8)
+    output_image = np.zeros((img_height * font_size_scale, img_width * font_size_scale, 3), np.uint8)
 
     for i in range(len(ascii_str)):
         row = i // img_width
         col = i % img_width
-        position = (col * font_size, row * font_size)
+        position = (col * font_size_scale, row * font_size_scale)
         font = cv2.FONT_HERSHEY_SIMPLEX
-        font_scale = 0.4
+        font_scale = font_size_scale / 40  # Adjust this scale for better visualization
         font_thickness = 1
         font_color = (255, 255, 255)
         cv2.putText(output_image, ascii_str[i], position, font, font_scale, font_color, font_thickness)
