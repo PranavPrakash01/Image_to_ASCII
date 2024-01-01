@@ -10,7 +10,7 @@ ASCII_CHARS = "@%#*+=-:. "
 class ASCIIConverterApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("ASCII Image Converter")
+        self.root.title("ASCII.fy")
 
         self.input_image_path = tk.StringVar()
         self.output_image_path = tk.StringVar()
