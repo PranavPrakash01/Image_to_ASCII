@@ -21,52 +21,55 @@ class ASCIIConverterApp:
         self.input_placeholder_image = Image.new("RGB", (400, 400), "white")
         self.output_placeholder_image = Image.new("RGB", (400, 400), "white")
 
+        self.image_frame = tk.Frame(self.root)
+        self.image_frame.grid(row=0, column=0, columnspan=2, padx=10, pady=10)
+
         self.create_widgets()
         self.root.update_idletasks()
         self.root.geometry(f"{self.root.winfo_reqwidth()}x{self.root.winfo_reqheight()}")
 
     def create_widgets(self):
-        self.show_input_image(self.input_placeholder_image)
-        self.show_output_image(self.output_placeholder_image)
+        self.show_input_image(self.input_placeholder_image, parent_frame=self.image_frame)
+        self.show_output_image(self.output_placeholder_image, parent_frame=self.image_frame)
 
-        # Input Image Frame
-        browse_input_frame = tk.Frame(self.root)
-        browse_input_frame.grid(row=2, column=0, columnspan=2, pady=5)
+        main_frame = tk.Frame(self.root)
+        main_frame.grid(row=1, column=0, columnspan=2, padx=10, pady=10)
+
+        browse_input_frame = tk.Frame(main_frame)
+        browse_input_frame.grid(row=0, column=0, pady=5)
 
         tk.Label(browse_input_frame, text="Browse Input Image:").pack(side="left")
         self.input_image_path_entry = tk.Entry(browse_input_frame, width=40, state="readonly")
         self.input_image_path_entry.pack(side="left", padx=5)
         tk.Button(browse_input_frame, text="Select Image", command=self.browse_input_image).pack(side="left", padx=5)
 
-        # Output Folder Frame
-        browse_output_frame = tk.Frame(self.root)
-        browse_output_frame.grid(row=3, column=0, columnspan=2, pady=5)
+        browse_output_frame = tk.Frame(main_frame)
+        browse_output_frame.grid(row=1, pady=5)
 
         tk.Label(browse_output_frame, text="Select Output Folder:").pack(side="left")
         self.output_folder_path_entry = tk.Entry(browse_output_frame, width=40, state="readonly")
         self.output_folder_path_entry.pack(side="left", padx=5)
         tk.Button(browse_output_frame, text="Select Folder", command=self.browse_output_folder).pack(side="left", padx=5)
 
-        # Range Width Frame
-        range_width_frame = tk.Frame(self.root)
-        range_width_frame.grid(row=5, column=0, columnspan=2, pady=5)
+        range_width_frame = tk.Frame(main_frame)
+        range_width_frame.grid(row=2, pady=5)
 
         tk.Label(range_width_frame, text="Range Width:").pack(side="left")
         scale = tk.Scale(range_width_frame, variable=self.range_width, from_=1.0, to=50.0, orient="horizontal", resolution=1.0, showvalue=False, label=None)
         scale.pack(side="left", padx=5)
         tk.Label(range_width_frame, width=2, textvariable=self.range_width).pack(side="left", padx=2)
 
-        # Font Size Frame
-        font_size_frame = tk.Frame(self.root)
-        font_size_frame.grid(row=4, column=0, columnspan=2, pady=5)
+        font_size_frame = tk.Frame(main_frame)
+        font_size_frame.grid(row=3, pady=5)
 
         tk.Label(font_size_frame, text="Font Size:").pack(side="left")
         font_size_scale = tk.Scale(font_size_frame, variable=self.font_size, from_=5, to=15, orient="horizontal", resolution=1, showvalue=False, label=None)
         font_size_scale.pack(side="left", padx=5)
         tk.Label(font_size_frame, width=2, textvariable=self.font_size).pack(side="left", padx=2)
 
-        # Convert Button
-        tk.Button(self.root, text="Convert", command=self.convert_image).grid(row=6, column=0, columnspan=2, pady=10)
+        tk.Button(main_frame, text="Convert", command=self.convert_image).grid(row=4, pady=10)
+
+        
 
     def update_input_image_path_entry(self, path):
         self.input_image_path_entry.config(state="normal")
@@ -82,13 +85,10 @@ class ASCIIConverterApp:
         self.output_folder_path_entry.config(state="readonly")
 
     def browse_input_image(self):
-        self.show_input_image(self.input_placeholder_image)
-        self.show_output_image(self.output_placeholder_image)
-
         file_path = filedialog.askopenfilename(title="Select Input Image", filetypes=[("Image files", "*.png;*.jpg;*.jpeg")])
         if file_path:
             self.input_image_path.set(file_path)
-            self.show_input_image()
+            self.show_input_image(parent_frame=self.image_frame)
             self.update_input_image_path_entry(file_path)
 
     def browse_output_folder(self):
@@ -97,13 +97,12 @@ class ASCIIConverterApp:
             self.output_image_path.set(output_folder_path)
             self.update_output_folder_path_entry(output_folder_path)
 
-    def show_input_image(self, image=None):
+    def show_input_image(self, image=None, parent_frame=None):
         if image is None:
             image_path = self.input_image_path.get()
             if image_path:
                 image = Image.open(image_path)
 
-        # Calculate the maximum size that fits within the placeholder while maintaining the aspect ratio
         max_width = 400
         max_height = 400
         width, height = image.size
@@ -118,9 +117,9 @@ class ASCIIConverterApp:
 
         resized_image = image.resize((new_width, new_height), Image.ANTIALIAS)
         photo = ImageTk.PhotoImage(resized_image)
-        self.input_image_label = tk.Label(self.root, image=photo)
-        self.input_image_label.image = photo
-        self.input_image_label.grid(row=1, column=0, padx=10, pady=10)
+        input_image_label = tk.Label(parent_frame, image=photo)
+        input_image_label.image = photo
+        input_image_label.grid(row=0, column=0, padx=10, pady=10)
 
     def convert_image(self):
         input_path = self.input_image_path.get()
@@ -133,19 +132,18 @@ class ASCIIConverterApp:
         output_filename = f"{os.path.splitext(input_filename)[0]}-ascii.png"
         output_path = os.path.join(output_folder_path, output_filename)
 
-        font_size = int(self.font_size.get())  # Get the font size value
+        font_size = int(self.font_size.get())
 
         create_ascii_image(input_path, output_path, new_width=100, range_width=self.range_width.get(), font_size=font_size)
 
-        self.show_output_image(Image.open(output_path))
+        self.show_output_image(Image.open(output_path), parent_frame=self.image_frame)
 
-    def show_output_image(self, image=None):
+    def show_output_image(self, image=None, parent_frame=None):
         if image is None:
             image_path = self.output_image_path.get()
             if image_path:
                 image = Image.open(image_path)
 
-        # Calculate the maximum size that fits within the placeholder while maintaining the aspect ratio
         max_width = 400
         max_height = 400
         width, height = image.size
@@ -160,9 +158,9 @@ class ASCIIConverterApp:
 
         resized_image = image.resize((new_width, new_height), Image.ANTIALIAS)
         photo = ImageTk.PhotoImage(resized_image)
-        self.output_image_label = tk.Label(self.root, image=photo)
-        self.output_image_label.image = photo
-        self.output_image_label.grid(row=1, column=1, padx=10, pady=10)
+        output_image_label = tk.Label(parent_frame, image=photo)
+        output_image_label.image = photo
+        output_image_label.grid(row=0, column=1, padx=10, pady=10)
 
 def resize_image(image, new_width=100):
     height, width, _ = image.shape
@@ -207,7 +205,7 @@ def create_ascii_image(input_path, output_path, new_width=100, range_width=21.0,
         col = i % img_width
         position = (col * font_size_scale, row * font_size_scale)
         font = cv2.FONT_HERSHEY_SIMPLEX
-        font_scale = font_size_scale / 40  # Adjust this scale for better visualization
+        font_scale = font_size_scale / 40
         font_thickness = 1
         font_color = (255, 255, 255)
         cv2.putText(output_image, ascii_str[i], position, font, font_scale, font_color, font_thickness)
@@ -218,4 +216,3 @@ if __name__ == "__main__":
     root = tk.Tk()
     app = ASCIIConverterApp(root)
     root.mainloop()
-    #HAPPY NEW YEAR :D
