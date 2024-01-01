@@ -15,7 +15,7 @@ class ASCIIConverterApp:
         self.input_image_path = tk.StringVar()
         self.output_image_path = tk.StringVar()
 
-        self.range_width = tk.DoubleVar(value=20)
+        self.range_width = tk.DoubleVar(value=25)
         self.font_size = tk.DoubleVar(value=10)
 
         self.input_placeholder_image = Image.new("RGB", (500, 600), "white")
@@ -25,7 +25,7 @@ class ASCIIConverterApp:
         self.image_frame.grid(row=0, column=0, padx=10, pady=10)
 
         self.side_bar = tk.Frame(self.root)
-        self.side_bar.grid(row=0, column=1, padx=10, pady=10)
+        self.side_bar.grid(row=0, column=1, padx=10, pady=10, )
 
         self.create_widgets()
         self.root.update_idletasks()
