@@ -18,8 +18,8 @@ class ASCIIConverterApp:
         self.range_width = tk.DoubleVar(value=20)
         self.font_size = tk.DoubleVar(value=10)
 
-        self.input_placeholder_image = Image.new("RGB", (400, 400), "white")
-        self.output_placeholder_image = Image.new("RGB", (400, 400), "white")
+        self.input_placeholder_image = Image.new("RGB", (500, 600), "white")
+        self.output_placeholder_image = Image.new("RGB", (500, 600), "white")
 
         self.image_frame = tk.Frame(self.root)
         self.image_frame.grid(row=0, column=0, padx=10, pady=10)
@@ -46,7 +46,7 @@ class ASCIIConverterApp:
         self.input_image_path_entry = tk.Entry(path_button_frame, width=40, state="readonly")
         self.input_image_path_entry.pack(side="left", padx=5, fill="x")
 
-        tk.Button(path_button_frame, text="Select Image", command=self.browse_input_image).pack(side="left", padx=5)
+        tk.Button(path_button_frame, text="...", command=self.browse_input_image).pack(side="left", padx=5)
 
         browse_output_frame = tk.Frame(self.side_bar)
         browse_output_frame.pack(side="top", fill="x")
@@ -56,10 +56,10 @@ class ASCIIConverterApp:
         self.output_folder_path_entry = tk.Entry(browse_output_frame, width=40, state="readonly")
         self.output_folder_path_entry.pack(side="left", padx=5, fill="x")
 
-        tk.Button(browse_output_frame, text="Select Folder", command=self.browse_output_folder).pack(side="left", padx=5)
+        tk.Button(browse_output_frame, text="...", command=self.browse_output_folder).pack(side="left", padx=5)
 
         range_width_frame = tk.Frame(self.side_bar)
-        range_width_frame.pack(pady=5)
+        range_width_frame.pack(pady=5, fill="x")
 
         tk.Label(range_width_frame, text="Range Width:", anchor="w").pack(side="top", fill="x")
 
@@ -68,7 +68,7 @@ class ASCIIConverterApp:
         tk.Label(range_width_frame, width=2, textvariable=self.range_width).pack(side="top", padx=2)
 
         font_size_frame = tk.Frame(self.side_bar)
-        font_size_frame.pack(pady=5)
+        font_size_frame.pack(pady=5, fill="x")
 
         tk.Label(font_size_frame, text="Font Size:", anchor="w").pack(side="top", fill="x")
 
@@ -111,8 +111,8 @@ class ASCIIConverterApp:
             if image_path:
                 image = Image.open(image_path)
 
-        max_width = 400
-        max_height = 400
+        max_width = 500
+        max_height = 600
         width, height = image.size
         aspect_ratio = width / height
 
@@ -152,8 +152,8 @@ class ASCIIConverterApp:
             if image_path:
                 image = Image.open(image_path)
 
-        max_width = 400
-        max_height = 400
+        max_width = 500
+        max_height = 600
         width, height = image.size
         aspect_ratio = width / height
 
