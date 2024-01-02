@@ -18,7 +18,7 @@ class ASCIIConverterApp:
         self.range_width = tk.DoubleVar(value=25)
         self.font_size = tk.DoubleVar(value=10)
 
-        self.input_placeholder_image = Image.new("RGB", (500, 600), "white")
+        self.input_placeholder_image = Image.new("RGB", (200, 200), "white")
         self.output_placeholder_image = Image.new("RGB", (500, 600), "white")
 
         self.image_frame = tk.Frame(self.root)
@@ -27,12 +27,15 @@ class ASCIIConverterApp:
         self.side_bar = tk.Frame(self.root)
         self.side_bar.grid(row=0, column=1, padx=10, pady=10, )
 
+        self.input_frame = tk.Frame(self.side_bar)  # Step 1: Create a new frame
+        self.input_frame.pack(side="top", padx=10, pady=10, fill="x")  # Pack the input_frame
+
         self.create_widgets()
         self.root.update_idletasks()
         self.root.geometry(f"{self.root.winfo_reqwidth()}x{self.root.winfo_reqheight()}")
 
     def create_widgets(self):
-        self.show_input_image(self.input_placeholder_image, parent_frame=self.image_frame)
+        self.show_input_image(self.input_placeholder_image, parent_frame=self.input_frame)  # Step 2: Move to input_frame
         self.show_output_image(self.output_placeholder_image, parent_frame=self.image_frame)
 
         browse_input_frame = tk.Frame(self.side_bar)
@@ -78,7 +81,6 @@ class ASCIIConverterApp:
 
         tk.Button(self.side_bar, text="Convert", command=self.convert_image).pack(pady=10, fill="x")
 
-
     def update_input_image_path_entry(self, path):
         self.input_image_path_entry.config(state="normal")
         _, last_portion = os.path.split(path)
@@ -96,7 +98,7 @@ class ASCIIConverterApp:
         file_path = filedialog.askopenfilename(title="Select Input Image", filetypes=[("Image files", "*.png;*.jpg;*.jpeg")])
         if file_path:
             self.input_image_path.set(file_path)
-            self.show_input_image(parent_frame=self.image_frame)
+            self.show_input_image(parent_frame=self.input_frame)  # Step 3: Update parent frame to input_frame
             self.update_input_image_path_entry(file_path)
 
     def browse_output_folder(self):
@@ -111,8 +113,8 @@ class ASCIIConverterApp:
             if image_path:
                 image = Image.open(image_path)
 
-        max_width = 500
-        max_height = 600
+        max_width = 200
+        max_height = 200
         width, height = image.size
         aspect_ratio = width / height
 
@@ -224,4 +226,3 @@ if __name__ == "__main__":
     root = tk.Tk()
     app = ASCIIConverterApp(root)
     root.mainloop()
-    #done
