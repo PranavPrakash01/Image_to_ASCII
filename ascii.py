@@ -28,7 +28,7 @@ class ASCIIConverterApp:
         self.side_bar.grid(row=0, column=1, padx=10, pady=10, )
 
         self.input_frame = tk.Frame(self.side_bar)  # Step 1: Create a new frame
-        self.input_frame.pack(side="top", padx=10, pady=10, fill="x")  # Pack the input_frame
+        self.input_frame.pack(side="top", padx=30, pady=10, fill="x")  # Pack the input_frame
 
         self.create_widgets()
         self.root.update_idletasks()
