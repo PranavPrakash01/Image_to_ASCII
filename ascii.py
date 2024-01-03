@@ -17,6 +17,7 @@ class ASCIIConverterApp:
 
         self.range_width = tk.DoubleVar(value=25)
         self.font_size = tk.DoubleVar(value=10)
+        self.mode_var = tk.StringVar(value="Image")
 
         self.input_placeholder_image = Image.new("RGB", (200, 200), "white")
         self.output_placeholder_image = Image.new("RGB", (500, 600), "white")
@@ -27,21 +28,29 @@ class ASCIIConverterApp:
         self.side_bar = tk.Frame(self.root)
         self.side_bar.grid(row=0, column=1, padx=10, pady=10, )
 
-        self.input_frame = tk.Frame(self.side_bar)  # Step 1: Create a new frame
-        self.input_frame.pack(side="top", padx=30, pady=10, fill="x")  # Pack the input_frame
+        self.input_frame = tk.Frame(self.side_bar)
+        self.input_frame.pack(side="top", padx=30, pady=10, fill="x")
 
         self.create_widgets()
         self.root.update_idletasks()
         self.root.geometry(f"{self.root.winfo_reqwidth()}x{self.root.winfo_reqheight()}")
 
     def create_widgets(self):
-        self.show_input_image(self.input_placeholder_image, parent_frame=self.input_frame)  # Step 2: Move to input_frame
+        self.show_input_image(self.input_placeholder_image, parent_frame=self.input_frame)
         self.show_output_image(self.output_placeholder_image, parent_frame=self.image_frame)
+
+        mode_frame = tk.Frame(self.side_bar)
+        mode_frame.pack(pady=5, fill="x")
+
+        tk.Label(mode_frame, text="Mode:", anchor="w").pack(side="left")
+
+        tk.Radiobutton(mode_frame, text="Image", variable=self.mode_var, value="Image").pack(side="left", padx=5)
+        tk.Radiobutton(mode_frame, text="Video", variable=self.mode_var, value="Video").pack(side="left", padx=5)
 
         browse_input_frame = tk.Frame(self.side_bar)
         browse_input_frame.pack(pady=5)
 
-        tk.Label(browse_input_frame, text="Browse Input Image:", anchor="w").pack(side="top", fill="x")
+        tk.Label(browse_input_frame, text="Browse Input File:", anchor="w").pack(side="top", fill="x")
 
         path_button_frame = tk.Frame(browse_input_frame)
         path_button_frame.pack(side="top", fill="x")
@@ -49,7 +58,7 @@ class ASCIIConverterApp:
         self.input_image_path_entry = tk.Entry(path_button_frame, width=40, state="readonly")
         self.input_image_path_entry.pack(side="left", padx=5, fill="x")
 
-        tk.Button(path_button_frame, text="...", command=self.browse_input_image).pack(side="left", padx=5)
+        tk.Button(path_button_frame, text="...", command=self.browse_input).pack(side="left", padx=5)
 
         browse_output_frame = tk.Frame(self.side_bar)
         browse_output_frame.pack(side="top", fill="x")
@@ -94,11 +103,11 @@ class ASCIIConverterApp:
         self.output_folder_path_entry.insert(0, path)
         self.output_folder_path_entry.config(state="readonly")
 
-    def browse_input_image(self):
-        file_path = filedialog.askopenfilename(title="Select Input Image", filetypes=[("Image files", "*.png;*.jpg;*.jpeg")])
+    def browse_input(self):
+        file_path = filedialog.askopenfilename(title="Select Input File", filetypes=[("Image/Video files", "*.png;*.jpg;*.jpeg;*.mp4")])
         if file_path:
             self.input_image_path.set(file_path)
-            self.show_input_image(parent_frame=self.input_frame)  # Step 3: Update parent frame to input_frame
+            self.show_input_image(parent_frame=self.input_frame)
             self.update_input_image_path_entry(file_path)
 
     def browse_output_folder(self):
@@ -132,21 +141,28 @@ class ASCIIConverterApp:
         input_image_label.grid(row=0, column=0, padx=10, pady=10)
 
     def convert_image(self):
-        input_path = self.input_image_path.get()
-        output_folder_path = self.output_image_path.get()
+        mode = self.mode_var.get()
 
-        if not input_path or not output_folder_path:
-            return
+        if mode == "Image":
+            input_path = self.input_image_path.get()
+            output_folder_path = self.output_image_path.get()
 
-        input_dir, input_filename = os.path.split(input_path)
-        output_filename = f"{os.path.splitext(input_filename)[0]}-ascii.png"
-        output_path = os.path.join(output_folder_path, output_filename)
+            if not input_path or not output_folder_path:
+                return
 
-        font_size = int(self.font_size.get())
+            input_dir, input_filename = os.path.split(input_path)
+            output_filename = f"{os.path.splitext(input_filename)[0]}-ascii.png"
+            output_path = os.path.join(output_folder_path, output_filename)
 
-        create_ascii_image(input_path, output_path, new_width=100, range_width=self.range_width.get(), font_size=font_size)
+            font_size = int(self.font_size.get())
 
-        self.show_output_image(Image.open(output_path), parent_frame=self.image_frame)
+            create_ascii_image(input_path, output_path, new_width=100, range_width=self.range_width.get(), font_size=font_size)
+
+            self.show_output_image(Image.open(output_path), parent_frame=self.image_frame)
+
+        elif mode == "Video":
+            # Add code for video processing (to be implemented later)
+            pass
 
     def show_output_image(self, image=None, parent_frame=None):
         if image is None:
@@ -225,8 +241,6 @@ def create_ascii_image(input_path, output_path, new_width=100, range_width=21.0,
 if __name__ == "__main__":
     root = tk.Tk()
     app = ASCIIConverterApp(root)
-     # Disable resizing and set the window to a fixed size
     root.resizable(width=False, height=False)
-    root.geometry("855x650")  # Set your desired window size
-
+    root.geometry("855x650")
     root.mainloop()
