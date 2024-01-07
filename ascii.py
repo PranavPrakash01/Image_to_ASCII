@@ -244,4 +244,3 @@ if __name__ == "__main__":
     root.resizable(width=False, height=False)
     root.geometry("855x650")
     root.mainloop()
-    #
